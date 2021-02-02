@@ -60,7 +60,6 @@ DLCBooleanInterpreterTest >> testInterpreterConfigFor [
 	self assert: (result class canUnderstand: #'add:').
 	
 	pair := parser parse: '(read: list)'.
-	interpreter := DLCBooleanInterpreter new.
 	result := interpreter interpreterConfigFor: pair.
 	self assert: result isNil.
 ]
