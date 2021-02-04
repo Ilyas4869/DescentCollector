@@ -14,22 +14,22 @@ DLCollector >> config [
 	^config
 ]
 
-{ #category : #accessing }
-DLCollector >> config: anObject [
-	config := anObject
-]
-
 { #category : #interpreting }
 DLCollector >> defaultInterpreterFor: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	
-	| count |
-	count := aPair rest size.
-	
+
+	| dict interpreter |
+	dict := Dictionary new.
+	interpreter := aPair restIsEmpty
+		ifTrue: [ interpreters at: DLCStringInterpreter ]
+		ifFalse: [ interpreters at: DLCDictionaryInterpreter ].
+	dict at: 'Interpreter' put: interpreter.
+	^ dict
 ]
 
 { #category : #initialization }
 DLCollector >> initialize [
+	config := DLCConfiguration new.
 	self initializeInterpreters.
 	
 ]
@@ -49,10 +49,12 @@ DLCollector >> initializeInterpreters [
 { #category : #interpreting }
 DLCollector >> interpreterFor: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	
-	| count |
-	count := aPair rest size.
-	
+
+	| interpreter |
+	interpreter := (config interpreters includesKey: aPair key)
+		ifTrue: [ interpreters at: aPair key ]
+		ifFalse: [ self defaultInterpreterFor: aPair ].
+	^ interpreter
 ]
 
 { #category : #initialization }

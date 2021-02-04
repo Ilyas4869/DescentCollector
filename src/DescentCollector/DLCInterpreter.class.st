@@ -32,14 +32,8 @@ DLCInterpreter >> interpret: aPair [
 { #category : #interpreting }
 DLCInterpreter >> interpretPair: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	| interpreterData interpreterClass interpreterSingleton |
+	| interpreterData interpreter |
 	interpreterData := collector interpreterFor: aPair.
-	interpreterClass := interpreterData at: 'Class'.
-	interpreterSingleton := collector interpreters at: interpreterClass.
-	^interpreterSingleton interpret: aPair withConfig: (interpreterData at: 'Config')
-]
-
-{ #category : #configuration }
-DLCInterpreter >> setConfigMetadata: aString [
-	^false
+	interpreter := interpreterData at: 'Interpreter'.
+	^interpreter interpret: aPair.
 ]
