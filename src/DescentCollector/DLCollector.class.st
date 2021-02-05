@@ -29,9 +29,15 @@ DLCollector >> defaultInterpreterFor: aPair [
 
 { #category : #initialization }
 DLCollector >> initialize [
-	config := DLCConfiguration new.
+	self initializeConfig.
 	self initializeInterpreters.
 	
+]
+
+{ #category : #initialization }
+DLCollector >> initializeConfig [
+	config := DLCConfiguration new.
+	config collector: self
 ]
 
 { #category : #initialization }
@@ -42,6 +48,7 @@ DLCollector >> initializeInterpreters [
 	interpreters at: DLCDictionaryInterpreter put: DLCDictionaryInterpreter new.
 	interpreters at: DLCListInterpreter put: DLCListInterpreter new.
 	interpreters at: DLCStringInterpreter put: DLCStringInterpreter new.
+	interpreters at: DLCIntegerInterpreter put: DLCIntegerInterpreter new.
 	
 	interpreters valuesDo: [ :value | value collector: self ].
 ]
@@ -52,7 +59,7 @@ DLCollector >> interpreterFor: aPair [
 
 	| interpreter |
 	interpreter := (config interpreters includesKey: aPair key)
-		ifTrue: [ interpreters at: aPair key ]
+		ifTrue: [ config interpreters at: aPair key ]
 		ifFalse: [ self defaultInterpreterFor: aPair ].
 	^ interpreter
 ]

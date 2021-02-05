@@ -29,6 +29,7 @@ DLCollectorTest >> testInitialize [
 	| c |
 	c := DLCollector new.
 	self assert: c config class equals: DLCConfiguration.
+	self assert: c config collector equals: c.
 	self assert: (c interpreters at: DLCStringInterpreter) class equals: DLCStringInterpreter.
 	self assert: (c interpreters at: DLCDictionaryInterpreter) class equals: DLCDictionaryInterpreter.
 	self assert: (c interpreters at: DLCDictionaryInterpreter) collector equals: c.

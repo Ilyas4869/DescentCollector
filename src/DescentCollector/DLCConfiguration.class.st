@@ -8,6 +8,16 @@ Class {
 	#category : #DescentCollector
 }
 
+{ #category : #accessing }
+DLCConfiguration >> collector [
+	^collector
+]
+
+{ #category : #accessing }
+DLCConfiguration >> collector: anObject [
+	collector := anObject
+]
+
 { #category : #initialization }
 DLCConfiguration >> initialize [
 	interpreters := Dictionary new
@@ -23,8 +33,7 @@ DLCConfiguration >> readConfig: aPair [
 	"aPair: an instance of DLList, representing the configuration block"
 	aPair restDo: [ :each | 
 		(each key = 'types') ifTrue: 
-			[self readInterpreters: each rest]
-		
+			[self readInterpreters: each rest]		
 		]
 ]
 
