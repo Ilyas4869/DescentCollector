@@ -49,3 +49,37 @@ DLCConfigurationTest >> testReadConfig [
 		equals: DLCBooleanInterpreter.
 	
 ]
+
+{ #category : #test }
+DLCConfigurationTest >> testReadConfigWithAliases [
+
+	| collector parser config pair |
+	collector := DLCollector new.
+	parser := DLittleLParser new.
+	config := collector config.
+	pair := parser parse: '(DLittleConfig: 
+	(types:
+		(author: class DLCAuthor)
+		(books: list)
+		(book: class DLCBook)
+		(title: string)
+		(read: boolean)
+		(price: integer)
+	 )
+	(alias:
+		(true: SI)
+		(true: Ouui)
+		(false: Noon)
+		(someOtherAlias: AliasValue)
+	 ))'.
+	config readConfig: pair.
+	self assert: config collector equals: collector.
+	self assert: config aliases size equals: 3.
+	self assert: ((config aliases at: 'someOtherAlias') includes: 'AliasValue').
+	
+	self assert: ((collector interpreters at: DLCBooleanInterpreter) trueAliases includes: 'SI').
+	self assert: ((collector interpreters at: DLCBooleanInterpreter) trueAliases includes: 'Ouui').
+	self assert: ((collector interpreters at: DLCBooleanInterpreter) falseAliases includes: 'Noon').
+	
+
+]

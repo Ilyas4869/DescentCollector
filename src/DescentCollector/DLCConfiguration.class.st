@@ -3,10 +3,16 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'collector',
-		'interpreters'
+		'interpreters',
+		'aliases'
 	],
 	#category : #DescentCollector
 }
+
+{ #category : #accessing }
+DLCConfiguration >> aliases [ 
+	^aliases
+]
 
 { #category : #accessing }
 DLCConfiguration >> collector [
@@ -20,7 +26,8 @@ DLCConfiguration >> collector: anObject [
 
 { #category : #initialization }
 DLCConfiguration >> initialize [
-	interpreters := Dictionary new
+	interpreters := Dictionary new.
+	aliases := Dictionary new
 ]
 
 { #category : #accessing }
@@ -29,11 +36,30 @@ DLCConfiguration >> interpreters [
 ]
 
 { #category : #adding }
+DLCConfiguration >> readAliases: aCollection [
+	"aCollection: a collection of DLList aliases"
+
+	aCollection
+		do: [ :each | 
+			(aliases includesKey: each key)
+				ifFalse: [ aliases at: each key put: OrderedCollection new ].
+			(aliases at: each key) add: each value.
+			
+			each key = 'true'
+				ifTrue: [(collector interpreters at: DLCBooleanInterpreter) trueAliases add: each value].
+			each key = 'false'
+				ifTrue: [(collector interpreters at: DLCBooleanInterpreter) falseAliases add: each value].
+			 ]
+]
+
+{ #category : #adding }
 DLCConfiguration >> readConfig: aPair [
 	"aPair: an instance of DLList, representing the configuration block"
 	aPair restDo: [ :each | 
 		(each key = 'types') ifTrue: 
-			[self readInterpreters: each rest]		
+			[self readInterpreters: each rest].
+		(each key = 'alias') ifTrue: 
+			[self readAliases: each rest]		
 		]
 ]
 

@@ -7,7 +7,7 @@ Class {
 { #category : #adding }
 DLCDictionaryInterpreter >> addKeyValue: aPair to: aDictionary [
 	| value |
-	value := self interpretPair: aPair.
+	value := collector interpret: aPair.
 	aDictionary at: (aPair key) put: value
 ]
 

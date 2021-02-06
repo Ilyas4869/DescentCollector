@@ -35,6 +35,19 @@ DLCClassInterpreterTest >> testInterpreterConfigFor [
 	self assert: result isNil.
 ]
 
+{ #category : #tests }
+DLCClassInterpreterTest >> testInterpreterConfigForWithData [
+
+	| parser pair interpreter result |
+	parser := DLittleLParser new.
+	pair := parser parse: '(book: class DLCBook (Id: title))'.
+	interpreter := DLCClassInterpreter new.
+	result := interpreter interpreterConfigFor: pair.
+	self assert: result notNil.
+	self assert: (result at: 'Class') equals: DLCBook.
+	self assert: (result at: 'Id') equals: 'title'
+]
+
 { #category : #test }
 DLCClassInterpreterTest >> testTryCallSelectorForClass [
 
@@ -68,5 +81,4 @@ DLCClassInterpreterTest >> testTryCallSelectorForClassKeepExtraInformation [
 	
 	interpreter tryCallSelector: pair rest fourth forClass: book.
 	self assert: (book propertyAt: 'ffo') equals: 'this is an imporant information'.
-	
 ]

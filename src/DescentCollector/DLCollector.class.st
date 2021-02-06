@@ -14,6 +14,11 @@ DLCollector >> config [
 	^config
 ]
 
+{ #category : #accessing }
+DLCollector >> defaultConfigBlockName [
+	^'DLittleConfig'
+]
+
 { #category : #interpreting }
 DLCollector >> defaultInterpreterFor: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
@@ -27,11 +32,31 @@ DLCollector >> defaultInterpreterFor: aPair [
 	^ dict
 ]
 
+{ #category : #interpreting }
+DLCollector >> deserialize: aString [
+	"handles the deserialization of a DLittle-format text"
+	
+	| parser blocks results |
+	results := OrderedCollection new.
+	parser := DLittleLParser new.
+	blocks := parser parseMultiple: aString.
+	blocks do: [ :each |
+		each key = self defaultConfigBlockName
+			ifTrue: [ config readConfig: each ]
+			ifFalse: [ results add: (self interpret: each) ] ].
+		
+	results size = 1
+		ifTrue: [ ^results first ].
+	^results
+	
+	
+	
+]
+
 { #category : #initialization }
 DLCollector >> initialize [
 	self initializeConfig.
 	self initializeInterpreters.
-	
 ]
 
 { #category : #initialization }
@@ -51,6 +76,15 @@ DLCollector >> initializeInterpreters [
 	interpreters at: DLCIntegerInterpreter put: DLCIntegerInterpreter new.
 	
 	interpreters valuesDo: [ :value | value collector: self ].
+]
+
+{ #category : #interpreting }
+DLCollector >> interpret: aPair [
+	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
+	| interpreterData interpreter |
+	interpreterData := self interpreterFor: aPair.
+	interpreter := interpreterData at: 'Interpreter'.
+	^interpreter interpret: aPair.
 ]
 
 { #category : #interpreting }

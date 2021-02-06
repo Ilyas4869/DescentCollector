@@ -7,7 +7,7 @@ Class {
 { #category : #interpreting }
 DLCStringInterpreter >> interpret: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	^aPair value
+	^aPair value asString
 ]
 
 { #category : #configuration }

@@ -7,12 +7,23 @@ Class {
 { #category : #interpreting }
 DLCClassInterpreter >> interpret: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	| c instance |
-	c := collector config interpreters at: aPair key at: 'Class'.
-	(c class canUnderstand: #new) ifFalse:
-	[ self error: ('Class {1} doesn''t exist' format: { c }) ].
+	
+	| config instance pair c |
+	config := collector config interpreters at: aPair key.
+	c := config at: 'Class'.
+	(c class canUnderstand: #new)
+		ifFalse: [ self error: ('Class {1} doesn''t exist' format: { c }) ].
 	instance := c perform: #new.
-	aPair rest do: [ :each | self tryCallSelector: each forClass: instance ].
+
+	((config includesKey: 'Id') & aPair value notNil)
+		ifTrue: [ pair := DLList new.
+			pair key: (config at: 'Id').
+			pair value: (aPair value).
+			self tryCallSelector: pair forClass: instance ].
+		
+	aPair rest do: 
+		[ :each | self tryCallSelector: each forClass: instance ].
+	
 	^instance
 ]
 
@@ -26,6 +37,7 @@ DLCClassInterpreter >> interpreterConfigFor: aPair [
 			class := self class environment
 				at: (aPair value allButFirst: prefix size) asSymbol.
 			config at: 'Class' put: class.
+			self putPairs: aPair rest in: config.
 			^ config ].
 	^ nil
 ]
@@ -33,7 +45,7 @@ DLCClassInterpreter >> interpreterConfigFor: aPair [
 { #category : #interpreting }
 DLCClassInterpreter >> tryCallSelector: aPair forClass: anObject [
 	| value |
-	value := self interpretPair: aPair.
+	value := collector interpret: aPair.
 	(anObject class canUnderstand: aPair key asSymbol asMutator)
 		ifTrue: [ anObject perform: aPair key asSymbol asMutator with: value ]
 		ifFalse: [ anObject propertyAt: aPair key asSymbol put: value ].

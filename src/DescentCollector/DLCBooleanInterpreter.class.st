@@ -2,8 +2,8 @@ Class {
 	#name : #DLCBooleanInterpreter,
 	#superclass : #DLCInterpreter,
 	#instVars : [
-		'trueAlias',
-		'falseAlias'
+		'trueAliases',
+		'falseAliases'
 	],
 	#category : #DescentCollector
 }
@@ -19,22 +19,24 @@ DLCBooleanInterpreter >> defaultTrueAliases [
 ]
 
 { #category : #accessing }
-DLCBooleanInterpreter >> falseAlias [
-	^falseAlias
+DLCBooleanInterpreter >> falseAliases [
+	^falseAliases
 ]
 
 { #category : #initialization }
 DLCBooleanInterpreter >> initialize [
-	trueAlias := self defaultTrueAliases.
-	falseAlias := self defaultFalseAliases
+	trueAliases := OrderedCollection new.
+	trueAliases addAll: self defaultTrueAliases.
+	falseAliases := OrderedCollection new.
+	falseAliases addAll: self defaultFalseAliases.
 ]
 
 { #category : #interpreting }
 DLCBooleanInterpreter >> interpret: aPair [
 	"aPair: an instance of DLList like (key1: value1 (key2: value2) (key3: value3))"
-	(trueAlias includes: aPair value ) ifTrue: 
+	(trueAliases includes: aPair value ) ifTrue: 
 	[ ^true ].
-	(falseAlias includes: aPair value ) ifTrue: 
+	(falseAliases includes: aPair value ) ifTrue: 
 	[ ^false ].
 	^self error: ('Unknown value {1} for the Boolean {2}' format: { aPair value . aPair key })
 	
@@ -51,6 +53,6 @@ DLCBooleanInterpreter >> interpreterConfigFor: aPair [
 ]
 
 { #category : #accessing }
-DLCBooleanInterpreter >> trueAlias [
-	^trueAlias
+DLCBooleanInterpreter >> trueAliases [
+	^trueAliases
 ]
